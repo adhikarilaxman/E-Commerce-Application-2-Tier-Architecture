@@ -30,10 +30,9 @@ services:
       - PORT=3000
       - SESSION_SECRET=secret123
     depends_on:
-      - mongodb
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
+      mongodb:
+        condition: service_healthy
+    entrypoint: ["sh", "-c", "node seed.js && node seedAdmin.js && node server.js"]
 
   # Frontend (Docker Hub Image)
   frontend:
