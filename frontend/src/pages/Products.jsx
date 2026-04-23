@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getProducts } from '../services/products';
 import { useCart } from '../context/CartContext';
-import { ShoppingBag, Star, Zap, BookOpen, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Star, Zap, BookOpen, TrendingUp, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -27,7 +27,7 @@ const SkeletonCard = ({ index }) => (
     </div>
 );
 
-const ProductCard = ({ product, index, onAddToCart, addingId }) => {
+const ProductCard = ({ product, index, onAddToCart, onBuyNow, addingId }) => {
     const isAdding = addingId === product._id;
 
     const categoryColors = [
@@ -105,36 +105,65 @@ const ProductCard = ({ product, index, onAddToCart, addingId }) => {
                     </div>
                 </div>
 
-                <button
-                    onClick={() => onAddToCart(product._id)}
-                    disabled={isAdding}
-                    className="w-full py-3 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 transition-all duration-300"
-                    style={{
-                        background: isAdding
-                            ? 'rgba(99,102,241,0.4)'
-                            : `linear-gradient(135deg, ${color.from}, ${color.to})`,
-                        boxShadow: isAdding ? 'none' : `0 4px 20px ${color.from}45`,
-                        transform: isAdding ? 'none' : undefined,
-                    }}
-                    onMouseEnter={e => {
-                        if (!isAdding) e.currentTarget.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseLeave={e => {
-                        e.currentTarget.style.transform = 'none';
-                    }}
-                >
-                    {isAdding ? (
-                        <>
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => onAddToCart(product._id)}
+                        disabled={isAdding}
+                        className="flex-1 py-3 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 transition-all duration-300"
+                        style={{
+                            background: isAdding
+                                ? 'rgba(99,102,241,0.4)'
+                                : `linear-gradient(135deg, ${color.from}, ${color.to})`,
+                            boxShadow: isAdding ? 'none' : `0 4px 20px ${color.from}45`,
+                            transform: isAdding ? 'none' : undefined,
+                        }}
+                        onMouseEnter={e => {
+                            if (!isAdding) e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'none';
+                        }}
+                    >
+                        {isAdding ? (
+                            <>
+                                <div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                                Adding...
+                            </>
+                        ) : (
+                            <>
+                                <ShoppingBag size={16} />
+                                Add to Cart
+                            </>
+                        )}
+                    </button>
+                    <button
+                        onClick={() => onBuyNow(product._id)}
+                        disabled={isAdding}
+                        className="flex-1 py-3 rounded-xl font-semibold text-sm text-white flex items-center justify-center gap-2 transition-all duration-300"
+                        style={{
+                            background: isAdding
+                                ? 'rgba(16,185,129,0.4)'
+                                : 'linear-gradient(135deg, #10b981, #059669)',
+                            boxShadow: isAdding ? 'none' : '0 4px 20px rgba(16,185,129,0.4)',
+                            transform: isAdding ? 'none' : undefined,
+                        }}
+                        onMouseEnter={e => {
+                            if (!isAdding) e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.transform = 'none';
+                        }}
+                    >
+                        {isAdding ? (
                             <div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
-                            Adding...
-                        </>
-                    ) : (
-                        <>
-                            <ShoppingBag size={16} />
-                            Add to Cart
-                        </>
-                    )}
-                </button>
+                        ) : (
+                            <>
+                                Buy Now
+                                <ArrowRight size={16} />
+                            </>
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -170,6 +199,18 @@ const Products = () => {
         setAddingId(productId);
         await addToCart(productId);
         setAddingId(null);
+        navigate('/cart');
+    };
+
+    const handleBuyNow = async (productId) => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        setAddingId(productId);
+        await addToCart(productId);
+        setAddingId(null);
+        navigate('/cart');
     };
 
     return (
@@ -220,6 +261,7 @@ const Products = () => {
                             product={product}
                             index={index}
                             onAddToCart={handleAddToCart}
+                            onBuyNow={handleBuyNow}
                             addingId={addingId}
                         />
                     ))}
