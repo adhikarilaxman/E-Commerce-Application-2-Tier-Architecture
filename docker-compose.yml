@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # MongoDB Database
   mongodb:
     image: mongo:7
     container_name: ecommerce_mongodb
@@ -18,7 +17,6 @@ services:
       timeout: 5s
       retries: 10
 
-  # Backend API (Docker Hub Image)
   backend:
     image: laxmanadhikari/e-commerce-application-2-tier-architecture:backend
     container_name: ecommerce_backend
@@ -26,15 +24,17 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/ecommerce_db
-      - PORT=3000
-      - SESSION_SECRET=secret123
+      MONGODB_URI: mongodb://mongodb:27017/ecommerce_db
+      PORT: 3000
+      SESSION_SECRET: secret123
     depends_on:
       mongodb:
         condition: service_healthy
+<<<<<<< HEAD
     entrypoint: ["sh", "-c", "node seed.js && node seedAdmin.js && node server.js"]
+=======
+>>>>>>> 12134097a50c68362ddebe8c479d83f84ae924d5
 
-  # Frontend (Docker Hub Image)
   frontend:
     image: laxmanadhikari/e-commerce-application-2-tier-architecture:frontend
     container_name: ecommerce_frontend
