@@ -12,6 +12,11 @@ services:
       - mongodb_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: ecommerce_db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   # Backend API (Docker Hub Image)
   backend:
@@ -21,11 +26,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/ecommerce_db
+      - MONGO_URI=mongodb://mongodb:27017/ecommerce_db
       - PORT=3000
       - SESSION_SECRET=secret123
     depends_on:
       - mongodb
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
 
   # Frontend (Docker Hub Image)
   frontend:
