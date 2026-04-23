@@ -13,11 +13,9 @@ services:
     environment:
       MONGO_INITDB_DATABASE: ecommerce_db
 
-  # Backend API
+  # Backend API (Docker Hub Image)
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: laxmanadhikari/e-commerce-application-2-tier-architecture:backend
     container_name: ecommerce_backend
     restart: unless-stopped
     ports:
@@ -28,15 +26,10 @@ services:
       - SESSION_SECRET=secret123
     depends_on:
       - mongodb
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
 
-  # Frontend
+  # Frontend (Docker Hub Image)
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: laxmanadhikari/e-commerce-application-2-tier-architecture:frontend
     container_name: ecommerce_frontend
     restart: unless-stopped
     ports:
