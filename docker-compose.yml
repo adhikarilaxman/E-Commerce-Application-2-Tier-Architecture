@@ -24,17 +24,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/ecommerce_db
+      MONGO_URI: mongodb://mongodb:27017/ecommerce_db
       PORT: 3000
       SESSION_SECRET: secret123
     depends_on:
       mongodb:
         condition: service_healthy
-<<<<<<< HEAD
     entrypoint: ["sh", "-c", "node seed.js && node seedAdmin.js && node server.js"]
-=======
->>>>>>> 12134097a50c68362ddebe8c479d83f84ae924d5
-
   frontend:
     image: laxmanadhikari/e-commerce-application-2-tier-architecture:frontend
     container_name: ecommerce_frontend
