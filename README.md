@@ -5,10 +5,11 @@ A lightweight, 2-tier architecture e-commerce application built for beginners. T
 ## Project Overview
 This application provides basic e-commerce functionality:
 - **User Authentication**: Register and Login using session cookies.
-- **Product Listing**: View available products from the database.
+- **Product Listing**: View available products from the database with INR pricing.
 - **Shopping Cart**: Add products, adjust quantities, and remove items.
 - **Checkout Flow**: Simple order placement simulating a checkout process.
 - **Order History**: View past orders and their details.
+- **Modern UI/UX**: Dark theme with glassmorphism, smooth animations, and responsive design.
 
 ## Tech Stack
 ### Frontend
@@ -36,6 +37,8 @@ e-commerce-app/
 │   ├── models/               # Mongoose schemas (User, Product, Order)
 │   ├── routes/               # Express route definitions
 │   ├── seed.js               # Script to populate database with sample products
+│   ├── seedAdmin.js          # Script to create admin user
+│   ├── Dockerfile            # Docker configuration for backend
 │   └── server.js             # Main backend application entry point
 │
 ├── frontend/                 # React Vite Application
@@ -50,8 +53,12 @@ e-commerce-app/
 │   │   └── main.jsx          # React DOM rendering entry
 │   ├── package.json          # Frontend dependencies
 │   ├── tailwind.config.js    # Tailwind CSS configuration
-│   └── vite.config.js        # Vite configuration
+│   ├── vite.config.js        # Vite configuration
+│   ├── Dockerfile            # Docker configuration for frontend
+│   └── nginx.conf            # Nginx configuration for production
 │
+├── docker-compose.yml        # Docker Compose orchestration
+├── .dockerignore             # Docker ignore file
 └── README.md                 # This file
 ```
 
@@ -96,6 +103,15 @@ cd backend
 node seed.js
 ```
 
+Create an admin user for testing:
+```bash
+cd backend
+node seedAdmin.js
+```
+**Default Admin Credentials:**
+- Username: `admin`
+- Password: `admin123`
+
 ---
 
 ## How to Run
@@ -127,6 +143,37 @@ If you want to view the users, products, or orders directly in your database wit
    mongosh "mongodb://127.0.0.1:27017/ecommerce_db" --eval "db.users.find().toArray()"
    ```
 3. To explore interactively, simply type `mongosh` in your terminal, then type `use ecommerce_db`, and run queries like `db.products.find()`.
+
+---
+
+## Docker Deployment
+
+For containerized deployment using Docker and Docker Compose:
+
+### Prerequisites
+- Docker installed on your machine
+- Docker Compose installed
+
+### Build and Run with Docker Compose
+```bash
+docker-compose up --build
+```
+
+This will:
+- Start MongoDB on port 27017
+- Start the backend API on port 3000
+- Start the frontend on port 80
+
+### Seed Database in Docker
+```bash
+docker-compose exec backend node seed.js
+docker-compose exec backend node seedAdmin.js
+```
+
+### Stop Containers
+```bash
+docker-compose down
+```
 
 ---
 
