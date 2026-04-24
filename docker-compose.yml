@@ -18,25 +18,21 @@ services:
       retries: 10
 
   backend:
-    image: laxmanadhikari/e-commerce-application-2-tier-architecture:backend
+    build: ./backend
     container_name: ecommerce_backend
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/ecommerce_db
-      PORT: 3000
-      SESSION_SECRET: secret123
+      - MONGO_URI=mongodb://mongodb:27017/ecommerce_db
+      - PORT=3000
+      - SESSION_SECRET=secret123
     depends_on:
       mongodb:
         condition: service_healthy
-<<<<<<< HEAD
-    entrypoint: ["sh", "-c", "node seed.js && node seedAdmin.js && node server.js"]
-=======
->>>>>>> 12134097a50c68362ddebe8c479d83f84ae924d5
 
   frontend:
-    image: laxmanadhikari/e-commerce-application-2-tier-architecture:frontend
+    build: ./frontend
     container_name: ecommerce_frontend
     restart: unless-stopped
     ports:
