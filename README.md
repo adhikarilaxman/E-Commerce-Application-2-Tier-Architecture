@@ -3,7 +3,7 @@
 A lightweight, 2-tier architecture e-commerce application built for beginners. This project uses a React frontend and a Node.js REST API backend connected to MongoDB.
 
 ## Project Overview
-This application provides basic e-commerce functionality:
+This application provides basic e-commerce functionality: 
 - **User Authentication**: Register and Login using session cookies.
 - **Product Listing**: View available products from the database with INR pricing.
 - **Shopping Cart**: Add products, adjust quantities, and remove items.
