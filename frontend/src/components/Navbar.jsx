@@ -1,8 +1,8 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { ShoppingCart, PackageSearch, Menu, X, LogOut, User, Package, Sparkles } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ShoppingCart, Package, Menu, X, LogOut } from 'lucide-react';
+import { useState } from 'react';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -10,13 +10,6 @@ const Navbar = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [scrolled, setScrolled] = useState(false);
-
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 12);
-        window.addEventListener('scroll', onScroll);
-        return () => window.removeEventListener('scroll', onScroll);
-    }, []);
 
     const handleLogout = async () => {
         await logout();
@@ -26,198 +19,109 @@ const Navbar = () => {
 
     const isActive = (path) => location.pathname === path;
 
-    const navLinkClass = (path) =>
-        `px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-            isActive(path)
-                ? 'text-brand-300 bg-brand-500/15 shadow-sm shadow-brand-500/10'
-                : 'text-gray-400 hover:text-white hover:bg-white/8'
+    const linkClass = (path) =>
+        `text-sm font-medium transition-colors duration-150 ${
+            isActive(path) ? 'text-white' : 'text-gray-400 hover:text-white'
         }`;
 
     return (
-        <nav
-            className="sticky top-0 z-50 transition-all duration-300"
-            style={{
-                background: scrolled
-                    ? 'rgba(8, 8, 25, 0.92)'
-                    : 'rgba(10, 10, 30, 0.7)',
-                backdropFilter: 'blur(24px)',
-                borderBottom: '1px solid rgba(255,255,255,0.07)',
-                boxShadow: scrolled ? '0 8px 32px rgba(0,0,0,0.5)' : 'none',
-            }}
-        >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
+        <nav className="sticky top-0 z-50 border-b border-white/6"
+            style={{ background: 'rgba(3,7,18,0.9)', backdropFilter: 'blur(16px)' }}>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <div className="flex justify-between items-center h-14">
 
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2.5 group">
-                        <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                            style={{
-                                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                                boxShadow: '0 4px 15px rgba(99,102,241,0.4)',
-                            }}
-                        >
-                            <PackageSearch size={18} className="text-white" />
-                        </div>
-                        <span
-                            className="font-bold text-xl tracking-tight"
-                            style={{
-                                fontFamily: 'Outfit, sans-serif',
-                                background: 'linear-gradient(135deg, #818cf8, #c084fc)',
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text',
-                            }}
-                        >
-                            ShopApp
-                        </span>
+                    <Link to="/" className="text-sm font-bold text-white tracking-tight">
+                        ShopApp
                     </Link>
 
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-1">
-                        <Link to="/products" className={navLinkClass('/products')}>Products</Link>
-                        {user ? (
+                    {/* Desktop */}
+                    <div className="hidden md:flex items-center gap-6">
+                        <Link to="/products" className={linkClass('/products')}>Products</Link>
+                        {user && (
                             <>
-                                <Link to="/cart" className={`${navLinkClass('/cart')} flex items-center gap-1.5 relative`}>
-                                    <ShoppingCart size={16} />
-                                    <span>Cart</span>
+                                <Link to="/cart" className={`${linkClass('/cart')} relative flex items-center gap-1.5`}>
+                                    <ShoppingCart size={15} />
+                                    Cart
                                     {cartCount > 0 && (
-                                        <span
-                                            className="absolute -top-1.5 -right-1.5 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center animate-bounce-in"
-                                            style={{ background: 'linear-gradient(135deg, #f43f5e, #e11d48)', boxShadow: '0 2px 8px rgba(244,63,94,0.5)' }}
-                                        >
+                                        <span className="absolute -top-2 -right-3 bg-indigo-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
                                             {cartCount}
                                         </span>
                                     )}
                                 </Link>
-                                <Link to="/orders" className={`${navLinkClass('/orders')} flex items-center gap-1.5`}>
-                                    <Package size={16} />
-                                    <span>Orders</span>
+                                <Link to="/orders" className={`${linkClass('/orders')} flex items-center gap-1.5`}>
+                                    <Package size={15} />
+                                    Orders
                                 </Link>
-
-                                {/* User area */}
-                                <div className="ml-3 flex items-center gap-2 pl-4 border-l border-white/8">
-                                    <div
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium text-brand-300"
-                                        style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}
-                                    >
-                                        <div className="w-6 h-6 rounded-full bg-brand-500/30 flex items-center justify-center">
-                                            <User size={12} className="text-brand-300" />
-                                        </div>
-                                        {user.username}
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="text-gray-500 hover:text-rose-400 p-2 rounded-xl hover:bg-rose-500/10 transition-all duration-200"
-                                        title="Logout"
-                                    >
-                                        <LogOut size={17} />
-                                    </button>
-                                </div>
                             </>
-                        ) : (
-                            <div className="ml-3 flex items-center gap-2 pl-4 border-l border-white/8">
-                                <Link
-                                    to="/login"
-                                    className="text-gray-400 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:bg-white/8"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-200 hover:scale-105"
-                                    style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 4px 15px rgba(99,102,241,0.35)' }}
-                                >
-                                    Get Started
-                                </Link>
-                            </div>
                         )}
+                        <div className="flex items-center gap-3 pl-4 border-l border-white/8">
+                            {user ? (
+                                <>
+                                    <span className="text-sm text-gray-400">{user.username}</span>
+                                    <button onClick={handleLogout}
+                                        className="text-gray-500 hover:text-gray-200 transition-colors"
+                                        title="Sign out">
+                                        <LogOut size={15} />
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/login" className="text-sm text-gray-400 hover:text-white transition-colors">
+                                        Sign in
+                                    </Link>
+                                    <Link to="/register" className="btn-primary text-xs py-1.5 px-3">
+                                        Sign up
+                                    </Link>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     {/* Mobile toggle */}
-                    <button
-                        onClick={() => setMobileOpen(!mobileOpen)}
-                        className="md:hidden text-gray-400 hover:text-white p-2 rounded-xl hover:bg-white/8 transition-all duration-200"
-                    >
-                        {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+                    <button onClick={() => setMobileOpen(!mobileOpen)}
+                        className="md:hidden text-gray-400 hover:text-white p-1 transition-colors">
+                        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
             </div>
 
-            {/* Mobile Nav */}
+            {/* Mobile menu */}
             {mobileOpen && (
-                <div
-                    className="md:hidden border-t border-white/6 animate-fade-in-down"
-                    style={{ background: 'rgba(8,8,25,0.97)', backdropFilter: 'blur(24px)' }}
-                >
-                    <div className="px-4 py-4 space-y-1">
-                        <Link
-                            to="/products"
-                            onClick={() => setMobileOpen(false)}
-                            className={`${navLinkClass('/products')} block`}
-                        >
-                            Products
-                        </Link>
-                        {user ? (
-                            <>
-                                <Link
-                                    to="/cart"
-                                    onClick={() => setMobileOpen(false)}
-                                    className={`${navLinkClass('/cart')} flex items-center gap-1.5`}
-                                >
-                                    <ShoppingCart size={16} />
-                                    Cart
-                                    {cartCount > 0 && (
-                                        <span
-                                            className="text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center ml-1"
-                                            style={{ background: 'linear-gradient(135deg, #f43f5e, #e11d48)' }}
-                                        >
-                                            {cartCount}
-                                        </span>
-                                    )}
-                                </Link>
-                                <Link
-                                    to="/orders"
-                                    onClick={() => setMobileOpen(false)}
-                                    className={`${navLinkClass('/orders')} flex items-center gap-1.5`}
-                                >
-                                    <Package size={16} />
-                                    Orders
-                                </Link>
-                                <div className="pt-3 mt-3 border-t border-white/8">
-                                    <div className="text-brand-300 px-4 py-2 text-sm font-medium flex items-center gap-2">
-                                        <User size={14} />
-                                        {user.username}
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full text-left text-rose-400 hover:bg-rose-500/10 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2"
-                                    >
-                                        <LogOut size={15} />
-                                        Sign Out
-                                    </button>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="pt-3 mt-3 border-t border-white/8 space-y-2">
-                                <Link
-                                    to="/login"
-                                    onClick={() => setMobileOpen(false)}
-                                    className="block text-gray-400 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    onClick={() => setMobileOpen(false)}
-                                    className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-white text-center"
-                                    style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-                                >
-                                    Get Started
-                                </Link>
+                <div className="md:hidden border-t border-white/6 px-4 py-4 space-y-1"
+                    style={{ background: 'rgba(3,7,18,0.97)' }}>
+                    <Link to="/products" onClick={() => setMobileOpen(false)}
+                        className={`block py-2 ${linkClass('/products')}`}>Products</Link>
+                    {user ? (
+                        <>
+                            <Link to="/cart" onClick={() => setMobileOpen(false)}
+                                className={`py-2 flex items-center gap-2 ${linkClass('/cart')}`}>
+                                <ShoppingCart size={15} /> Cart
+                                {cartCount > 0 && (
+                                    <span className="bg-indigo-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                        {cartCount}
+                                    </span>
+                                )}
+                            </Link>
+                            <Link to="/orders" onClick={() => setMobileOpen(false)}
+                                className={`py-2 flex items-center gap-2 ${linkClass('/orders')}`}>
+                                <Package size={15} /> Orders
+                            </Link>
+                            <div className="pt-3 mt-2 border-t border-white/6 flex items-center justify-between">
+                                <span className="text-sm text-gray-400">{user.username}</span>
+                                <button onClick={handleLogout}
+                                    className="text-sm text-gray-500 hover:text-gray-200 flex items-center gap-1.5 transition-colors">
+                                    <LogOut size={14} /> Sign out
+                                </button>
                             </div>
-                        )}
-                    </div>
+                        </>
+                    ) : (
+                        <div className="pt-3 mt-2 border-t border-white/6 flex flex-col gap-2">
+                            <Link to="/login" onClick={() => setMobileOpen(false)}
+                                className="text-sm text-gray-400 hover:text-white py-2 transition-colors">Sign in</Link>
+                            <Link to="/register" onClick={() => setMobileOpen(false)}
+                                className="btn-primary justify-center">Sign up</Link>
+                        </div>
+                    )}
                 </div>
             )}
         </nav>

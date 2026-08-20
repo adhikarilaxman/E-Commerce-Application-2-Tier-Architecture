@@ -34,7 +34,7 @@ exports.addToCart = async (req, res) => {
 
         res.json({ message: 'Added to cart', cart: req.session.cart });
     } catch (err) {
-        console.error(err);
+        console.error(err.message);
         res.status(500).json({ error: 'Server Error' });
     }
 };

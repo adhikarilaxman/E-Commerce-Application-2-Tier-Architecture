@@ -21,14 +21,9 @@ exports.checkout = async (req, res) => {
         req.session.cart = [];
         res.status(201).json({ message: 'Order placed successfully', orderId: newOrder._id });
     } catch (err) {
-        console.error(err);
+        console.error(err.message);
         res.status(500).json({ error: 'Server Error' });
     }
-};
-
-exports.getOrderSuccess = (req, res) => {
-    // This route is typically handled by React now, but we can return basic JSON if hit directly
-    res.json({ message: 'Order success endpoint reached' });
 };
 
 exports.getOrderHistory = async (req, res) => {
@@ -36,7 +31,7 @@ exports.getOrderHistory = async (req, res) => {
         const orders = await Order.find({ userId: req.session.user._id }).sort({ createdAt: -1 });
         res.json({ orders });
     } catch (err) {
-        console.error(err);
+        console.error(err.message);
         res.status(500).json({ error: 'Server Error' });
     }
 };

@@ -1,27 +1,23 @@
 import { useEffect, useState } from 'react';
 import { getOrders } from '../services/orders';
-import { Package, Calendar, IndianRupee, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Package, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatINR } from '../utils/format';
 
-const formatINR = (amount) =>
-    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
-
-const statusColors = {
-    pending:    { bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)', text: '#fbbf24', dot: '#f59e0b' },
-    processing: { bg: 'rgba(59,130,246,0.12)',  border: 'rgba(59,130,246,0.25)',  text: '#60a5fa', dot: '#3b82f6' },
-    completed:  { bg: 'rgba(16,185,129,0.12)',  border: 'rgba(16,185,129,0.25)',  text: '#34d399', dot: '#10b981' },
-    default:    { bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.25)',  text: '#818cf8', dot: '#6366f1' },
+const statusStyle = {
+    confirmed:  { color: '#34d399', bg: 'rgba(52,211,153,0.1)'  },
+    completed:  { color: '#34d399', bg: 'rgba(52,211,153,0.1)'  },
+    processing: { color: '#60a5fa', bg: 'rgba(96,165,250,0.1)'  },
+    pending:    { color: '#fbbf24', bg: 'rgba(251,191,36,0.1)'  },
 };
 
-const OrderStatusBadge = ({ status }) => {
-    const s = statusColors[status?.toLowerCase()] || statusColors.default;
+const StatusBadge = ({ status }) => {
+    const s = statusStyle[status?.toLowerCase()] || { color: '#9ca3af', bg: 'rgba(156,163,175,0.1)' };
     return (
-        <span
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold capitalize"
-            style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.text }}
-        >
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: s.dot }} />
-            {status || 'Completed'}
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium capitalize"
+            style={{ color: s.color, background: s.bg }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.color }} />
+            {status || 'Confirmed'}
         </span>
     );
 };
@@ -31,32 +27,25 @@ const Orders = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const data = await getOrders();
-                setOrders(data);
-            } catch (err) {
-                console.error('Failed to fetch orders', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOrders();
+        getOrders()
+            .then(setOrders)
+            .catch(() => {})
+            .finally(() => setLoading(false));
     }, []);
 
     if (loading) {
         return (
-            <div className="py-10 space-y-5">
-                <div className="skeleton h-10 w-56 rounded-xl" />
+            <div className="space-y-4 pt-2">
+                <div className="skeleton h-6 w-32 mb-6" />
                 {[0, 1, 2].map(i => (
-                    <div key={i} className="rounded-2xl overflow-hidden animate-fade-in" style={{ animationDelay: `${i * 100}ms`, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                        <div className="p-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
-                            <div className="skeleton h-5 w-48 mb-2" />
-                            <div className="skeleton h-4 w-32" />
+                    <div key={i} className="card overflow-hidden">
+                        <div className="p-4 border-b border-white/6">
+                            <div className="skeleton h-4 w-40 mb-2" />
+                            <div className="skeleton h-3 w-24" />
                         </div>
-                        <div className="p-5 grid grid-cols-2 gap-3">
-                            <div className="skeleton h-16 rounded-xl" />
-                            <div className="skeleton h-16 rounded-xl" />
+                        <div className="p-4 grid grid-cols-2 gap-3">
+                            <div className="skeleton h-14 rounded-lg" />
+                            <div className="skeleton h-14 rounded-lg" />
                         </div>
                     </div>
                 ))}
@@ -66,127 +55,59 @@ const Orders = () => {
 
     if (orders.length === 0) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center py-10">
-                <div
-                    className="max-w-md w-full text-center p-10 rounded-3xl animate-fade-in-up"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                >
-                    <div
-                        className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
-                        style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}
-                    >
-                        <Package size={40} className="text-brand-400" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                        No Orders Yet
-                    </h2>
-                    <p className="text-gray-400 mb-8">When you buy something, it will appear here.</p>
-                    <Link
-                        to="/products"
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105"
-                        style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 4px 20px rgba(99,102,241,0.4)' }}
-                    >
-                        <ShoppingBag size={18} />
-                        Browse Courses
-                        <ArrowRight size={16} />
-                    </Link>
+            <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center">
+                <Package size={36} className="text-gray-700" />
+                <div>
+                    <h2 className="text-lg font-semibold text-white mb-1">No orders yet</h2>
+                    <p className="text-sm text-gray-500">Your purchases will appear here.</p>
                 </div>
+                <Link to="/products" className="btn-primary mt-2">
+                    <ShoppingCart size={15} /> Browse courses
+                </Link>
             </div>
         );
     }
 
     return (
-        <div className="py-10">
-            {/* Header */}
-            <div className="mb-8 animate-fade-in-up">
-                <h1
-                    className="text-3xl font-extrabold text-white flex items-center gap-3"
-                    style={{ fontFamily: 'Outfit, sans-serif' }}
-                >
-                    <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center"
-                        style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-                    >
-                        <Package size={20} className="text-white" />
-                    </div>
-                    Order History
-                </h1>
-                <p className="text-gray-400 mt-2">{orders.length} order{orders.length !== 1 ? 's' : ''} placed</p>
+        <div>
+            <div className="mb-6">
+                <h1 className="text-xl font-bold text-white mb-1">Orders</h1>
+                <p className="text-sm text-gray-500">{orders.length} order{orders.length !== 1 ? 's' : ''}</p>
             </div>
 
-            <div className="space-y-5">
-                {orders.map((order, idx) => (
-                    <div
-                        key={order._id}
-                        className="rounded-2xl overflow-hidden animate-fade-in-up"
-                        style={{
-                            background: 'rgba(255,255,255,0.04)',
-                            border: '1px solid rgba(255,255,255,0.08)',
-                            animationDelay: `${idx * 80}ms`,
-                        }}
-                    >
-                        {/* Order Header */}
-                        <div
-                            className="px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"
-                            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.02)' }}
-                        >
-                            <div>
-                                <p className="text-xs text-gray-500 mb-1 font-mono">
-                                    Order #{order._id.slice(-8).toUpperCase()}
-                                </p>
-                                <div className="flex items-center gap-3 flex-wrap">
-                                    <span className="flex items-center gap-1.5 text-sm text-gray-300">
-                                        <Calendar size={14} className="text-gray-500" />
-                                        {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                                            year: 'numeric', month: 'long', day: 'numeric'
-                                        })}
-                                    </span>
-                                    <OrderStatusBadge status={order.status || 'Completed'} />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <IndianRupee size={16} className="text-brand-400" />
-                                <span
-                                    className="text-xl font-extrabold"
-                                    style={{
-                                        background: 'linear-gradient(135deg, #818cf8, #c084fc)',
-                                        WebkitBackgroundClip: 'text',
-                                        WebkitTextFillColor: 'transparent',
-                                        backgroundClip: 'text',
-                                        fontFamily: 'Outfit, sans-serif',
-                                    }}
-                                >
-                                    {formatINR(order.totalAmount)}
+            <div className="space-y-4">
+                {orders.map((order) => (
+                    <div key={order._id} className="card overflow-hidden">
+                        <div className="px-5 py-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/6 bg-white/[0.02]">
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <span className="text-xs text-gray-500 font-mono">
+                                    #{order._id.slice(-8).toUpperCase()}
                                 </span>
+                                <span className="text-xs text-gray-500">
+                                    {new Date(order.createdAt).toLocaleDateString('en-IN', {
+                                        year: 'numeric', month: 'short', day: 'numeric'
+                                    })}
+                                </span>
+                                <StatusBadge status={order.status} />
                             </div>
+                            <span className="text-sm font-bold text-white">
+                                {formatINR(order.totalAmount)}
+                            </span>
                         </div>
 
-                        {/* Order Items */}
-                        <div className="p-6">
-                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">
-                                Items in this Order
-                            </h4>
-                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {order.products.map((item, index) => (
-                                    <li
-                                        key={index}
-                                        className="flex items-center justify-between p-4 rounded-xl"
-                                        style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-                                    >
-                                        <div>
-                                            <p className="font-semibold text-white text-sm">{item.name}</p>
-                                            <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity}</p>
-                                        </div>
-                                        <div
-                                            className="text-sm font-bold"
-                                            style={{ color: '#818cf8' }}
-                                        >
-                                            {formatINR(item.price * item.quantity)}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        <ul className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {order.products.map((item, i) => (
+                                <li key={i} className="flex justify-between items-center p-3 rounded-lg bg-white/[0.02] border border-white/6">
+                                    <div>
+                                        <p className="text-sm font-medium text-white">{item.name}</p>
+                                        <p className="text-xs text-gray-500 mt-0.5">Qty {item.quantity}</p>
+                                    </div>
+                                    <span className="text-sm font-semibold text-gray-300">
+                                        {formatINR(item.price * item.quantity)}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 ))}
             </div>

@@ -23,12 +23,11 @@ exports.postLogin = async (req, res) => {
             return res.status(400).json({ error: 'Invalid username or password' });
         }
 
-        // Set session
         req.session.user = { _id: user._id, username: user.username };
         if (!req.session.cart) req.session.cart = [];
         res.json({ message: 'Login successful', user: req.session.user });
     } catch (err) {
-        console.error(err);
+        console.error(err.message);
         res.status(500).json({ error: 'Server Error' });
     }
 };
@@ -51,7 +50,7 @@ exports.postRegister = async (req, res) => {
         await newUser.save();
         res.status(201).json({ message: 'Registration successful' });
     } catch (err) {
-        console.error(err);
+        console.error(err.message);
         res.status(500).json({ error: 'Server Error' });
     }
 };
