@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+
+  pre_build:
+    commands:
+      - echo Installing backend dependencies...
+      - npm ci --only=production --prefix backend
+
+      - echo Installing frontend dependencies...
+      - npm ci --prefix frontend
+
+  build:
+    commands:
+      - echo Building frontend...
+      - npm run build --prefix frontend
+
+  post_build:
+    commands:
+      - echo Build completed successfully.
+
+artifacts:
+  files:
+    - backend/**/*
+    - frontend/dist/**/*
+    - docker-compose.yml
+  discard-paths: no
+
+cache:
+  paths:
+    - backend/node_modules/**/*
+    - frontend/node_modules/**/*
