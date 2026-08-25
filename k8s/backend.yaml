@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+  namespace: ecommerce
+type: Opaque
+stringData:
+  MONGO_URI: "mongodb://mongo:27017/ecommerce_db"
+  SESSION_SECRET: "my_super_secret_key"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: backend }
+  template:
+    metadata:
+      labels: { app: backend }
+    spec:
+      containers:
+        - name: backend
+          image: ecommerce-backend:1.0
+          imagePullPolicy: Never   # use the local image, don't try to pull
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: backend-secret
+          env:
+            - name: PORT
+              value: "3000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: ecommerce
+spec:
+  selector: { app: backend }
+  ports:
+    - port: 3000
+      targetPort: 3000
