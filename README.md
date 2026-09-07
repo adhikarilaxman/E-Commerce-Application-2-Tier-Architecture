@@ -1,6 +1,6 @@
 # Simple E-Commerce App (MERN Stack)      
      
-A lightweight, 2-tier architecture e-commerce application built for beginners. This project uses a React frontend and a Node.js REST API backend connected to MongoDB.
+A lightweight, 2-tier architecture e-commerce application built for beginners. This project uses a React frontend and a Node.js REST API backend connected to MongoDB. 
 
 ## Project Overview
 This application provides basic e-commerce functionality:  
