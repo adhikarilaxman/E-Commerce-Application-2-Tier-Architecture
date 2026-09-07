@@ -1,0 +1,43 @@
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      host: unix:///var/run/docker.sock
+
+      templates:
+
+        - condition:
+            equals:
+              docker.container.name: ecommerce_frontend
+
+          config:
+            - type: container
+              containers:
+                ids:
+                  - "${data.docker.container.id}"
+
+              processors:
+                - add_docker_metadata:
+                    host: unix:///var/run/docker.sock
+
+        - condition:
+            equals:
+              docker.container.name: ecommerce_backend
+
+          config:
+            - type: container
+              containers:
+                ids:
+                  - "${data.docker.container.id}"
+
+              processors:
+                - add_docker_metadata:
+                    host: unix:///var/run/docker.sock
+
+
+output.elasticsearch:
+  hosts:
+    - "http://elasticsearch:9200"
+
+
+setup.kibana:
+  host: "http://kibana:5601"
