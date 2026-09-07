@@ -14,10 +14,13 @@ filebeat.autodiscover:
               containers:
                 ids:
                   - "${data.docker.container.id}"
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
 
               processors:
                 - add_docker_metadata:
                     host: unix:///var/run/docker.sock
+
 
         - condition:
             equals:
@@ -28,6 +31,8 @@ filebeat.autodiscover:
               containers:
                 ids:
                   - "${data.docker.container.id}"
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
 
               processors:
                 - add_docker_metadata:
