@@ -4,7 +4,7 @@ A lightweight, 2-tier architecture e-commerce application built for beginners. T
 
 ## Project Overview
 This application provides basic e-commerce functionality:  
-- **User Authentication**: Register and Login using session cookies.
+- **User Authentication**: Register and Login using session cookies. 
 - **Product Listing**: View available products from the database with INR pricing.
 - **Shopping Cart**: Add products, adjust quantities, and remove items.
 - **Checkout Flow**: Simple order placement simulating a checkout process.
